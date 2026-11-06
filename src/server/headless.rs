@@ -1112,7 +1112,12 @@ impl HeadlessServer {
         extension: &str,
         data: &[u8],
     ) -> std::io::Result<crate::server::clipboard_image::StagedClipboardImage> {
-        let staged = crate::server::clipboard_image::stage(client_id, extension, data)?;
+        let staged = crate::server::clipboard_image::stage(
+            &self.app.state.clipboard_image_directory,
+            client_id,
+            extension,
+            data,
+        )?;
         info!(client_id, bytes = data.len(), path = %staged.paste_text, "staged client clipboard image");
         Ok(staged)
     }

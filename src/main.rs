@@ -225,6 +225,9 @@ const DEFAULT_CONFIG: &str = r##"# herdr configuration
 [server]
 # headless_cols = 120
 # headless_rows = 40
+# Where images bridged from a remote client are saved on this host.
+# Empty uses clipboard-images inside Herdr's config directory.
+# clipboard_image_directory = ""
 
 # [worktrees]
 # directory = "~/.herdr/worktrees"

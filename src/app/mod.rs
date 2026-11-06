@@ -456,6 +456,7 @@ impl App {
             should_quit: false,
             request_client_config_reload: false,
             worktree_directory,
+            clipboard_image_directory: config.clipboard_image_directory(),
             latest_release_notes,
             product_announcement: startup_product_announcement.map(|announcement| {
                 state::ProductAnnouncementState {
@@ -896,6 +897,7 @@ impl App {
                 diagnostics.push(format!("{diagnostic}; keeping current [server] settings"));
             } else {
                 self.state.headless_size = config.headless_size();
+                self.state.clipboard_image_directory = config.clipboard_image_directory();
             }
         }
 
@@ -1692,7 +1694,7 @@ mod tests {
         std::fs::create_dir_all(path.parent().unwrap()).unwrap();
         std::fs::write(
             &path,
-            "[terminal]\ndefault_shell = \"nu\"\nshell_mode = \"non_login\"\nnew_cwd = \"home\"\n[keys]\nnew_workspace = \"prefix+m\"\nprefix = \"ctrl+a\"\n[update]\nversion_check = false\nmanifest_check = false\n[server]\nheadless_cols = 160\nheadless_rows = 50\n[ui]\nagent_panel_sort = \"priority\"\n[ui.toast]\ndelivery = \"herdr\"\n",
+            "[terminal]\ndefault_shell = \"nu\"\nshell_mode = \"non_login\"\nnew_cwd = \"home\"\n[keys]\nnew_workspace = \"prefix+m\"\nprefix = \"ctrl+a\"\n[update]\nversion_check = false\nmanifest_check = false\n[server]\nheadless_cols = 160\nheadless_rows = 50\nclipboard_image_directory = \"~/herdr-reload-images\"\n[ui]\nagent_panel_sort = \"priority\"\n[ui.toast]\ndelivery = \"herdr\"\n",
         )
         .unwrap();
         std::env::set_var(crate::config::CONFIG_PATH_ENV_VAR, &path);
@@ -1704,6 +1706,10 @@ mod tests {
 
         assert_eq!(report.status, crate::config::ConfigReloadStatus::Applied);
         assert_eq!(app.state.headless_size, (160, 50));
+        assert_eq!(
+            app.state.clipboard_image_directory,
+            crate::worktree::expand_tilde_absolute_path("~/herdr-reload-images")
+        );
         assert_eq!(
             app.state.prefix_keys,
             vec![(KeyCode::Char('a'), KeyModifiers::CONTROL)]

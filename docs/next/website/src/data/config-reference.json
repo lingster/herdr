@@ -27,6 +27,12 @@
           "type": "integer",
           "default": "40",
           "description": "Virtual terminal height used for layout and newly created panes when no client is attached. Must be greater than zero."
+        },
+        {
+          "key": "server.clipboard_image_directory",
+          "type": "string",
+          "default": "\"\"",
+          "description": "Directory where this server saves images pasted or dropped from a remote client before pasting their path. Empty uses clipboard-images inside Herdr's config directory. ~ is expanded. On Unix the directory must be owned by the server's user."
         }
       ]
     },

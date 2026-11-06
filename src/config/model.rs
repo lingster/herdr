@@ -1043,6 +1043,9 @@ pub struct ServerConfig {
     pub headless_cols: u16,
     /// Virtual terminal height used when no client is attached. Default: 40.
     pub headless_rows: u16,
+    /// Directory where images pasted or dropped from a remote client are staged.
+    /// Empty uses `clipboard-images` inside Herdr's data directory. Default: "".
+    pub clipboard_image_directory: String,
 }
 
 #[derive(Debug, Deserialize)]
@@ -1313,6 +1316,7 @@ impl Default for ServerConfig {
         Self {
             headless_cols: crate::config::DEFAULT_HEADLESS_COLS,
             headless_rows: crate::config::DEFAULT_HEADLESS_ROWS,
+            clipboard_image_directory: String::new(),
         }
     }
 }

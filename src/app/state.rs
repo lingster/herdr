@@ -803,6 +803,8 @@ pub struct AppState {
     /// their client-local sound config from disk.
     pub request_client_config_reload: bool,
     pub worktree_directory: std::path::PathBuf,
+    /// Where the server stages images bridged from remote clients.
+    pub clipboard_image_directory: std::path::PathBuf,
     /// Latest endpoint-owned release notes, cached outside render paths.
     pub latest_release_notes: Option<crate::release_notes::ReleaseNotes>,
     pub product_announcement: Option<ProductAnnouncementState>,
@@ -1047,6 +1049,7 @@ impl AppState {
             should_quit: false,
             request_client_config_reload: false,
             worktree_directory: std::path::PathBuf::from("/tmp/herdr-worktrees"),
+            clipboard_image_directory: std::path::PathBuf::from("/tmp/herdr-clipboard-images"),
             latest_release_notes: None,
             product_announcement: None,
             view: ViewState {

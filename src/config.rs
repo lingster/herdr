@@ -134,6 +134,18 @@ impl Config {
         }
     }
 
+    /// Server-side staging directory for client clipboard images. The default
+    /// lives under the per-user Herdr data directory rather than the shared
+    /// system temp directory, so other users on the host cannot pre-create it.
+    pub(crate) fn clipboard_image_directory(&self) -> std::path::PathBuf {
+        let configured = self.server.clipboard_image_directory.trim();
+        if configured.is_empty() {
+            crate::session::data_dir().join("clipboard-images")
+        } else {
+            crate::worktree::expand_tilde_absolute_path(configured)
+        }
+    }
+
     pub(crate) fn invalid_headless_size_diagnostic(&self) -> Option<String> {
         (self.server.headless_cols == 0 || self.server.headless_rows == 0).then(|| {
             format!(
@@ -430,6 +442,37 @@ command = "echo one"
     fn remote_image_paste_key_can_be_disabled() {
         let config: Config = toml::from_str("[keys]\nremote_image_paste = ''\n").unwrap();
         assert_eq!(config.remote_image_paste_key().unwrap(), None);
+    }
+
+    #[test]
+    fn clipboard_image_directory_defaults_to_private_herdr_data_dir() {
+        let config = Config::default();
+        assert_eq!(config.server.clipboard_image_directory, "");
+        assert_eq!(
+            config.clipboard_image_directory(),
+            crate::session::data_dir().join("clipboard-images")
+        );
+    }
+
+    #[test]
+    fn clipboard_image_directory_blank_value_uses_default() {
+        let config: Config =
+            toml::from_str("[server]\nclipboard_image_directory = '   '\n").unwrap();
+        assert_eq!(
+            config.clipboard_image_directory(),
+            crate::session::data_dir().join("clipboard-images")
+        );
+    }
+
+    #[test]
+    fn clipboard_image_directory_parses_and_expands_tilde() {
+        let config: Config =
+            toml::from_str("[server]\nclipboard_image_directory = '~/herdr-images'\n").unwrap();
+        assert_eq!(
+            config.clipboard_image_directory(),
+            crate::worktree::expand_tilde_absolute_path("~/herdr-images")
+        );
+        assert!(config.clipboard_image_directory().is_absolute());
     }
 
     #[test]
